@@ -66,7 +66,7 @@ def mail_downloader(s, pool, email_id):
 def main():
     parser = OptionParser()
     parser.add_option("-s", "--server-address", dest="server_address", help="IMAP Server Address", metavar="SERVER", default="imap.gmail.com")
-    parser.add_option("-u", "--user-name", dest="username", help="IMAP Username", metavar="UNAME")
+    parser.add_option("-u", "--username", dest="username", help="IMAP Username", metavar="UNAME")
     parser.add_option("-p", "--password", dest="password", help="IMAP Server Address", metavar="PASS")
     parser.add_option("-R", "--subject-pattern", dest="subject_pattern", help="RegEx pattern to look for in email subjects", metavar="REGEX")
     parser.add_option("-X", "--folder-pattern", dest="folder_pattern", help="RegEx pattern to match folders with subjects", metavar="REGEX")
