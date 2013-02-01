@@ -77,11 +77,17 @@ def fetch_subjects():
     end_date = datetime.date.today().strftime("%d-%b-%Y")
     #typ, email_ids = mail.search (None, '(SENTSINCE {} SENTBEFORE {} X-GM-RAW has:attachment)'.format(start_date, end_date))
     typ, email_ids = mail.search (None, '(SENTSINCE {} SENTBEFORE {})'.format(start_date, end_date))
-        
+    
+    if(not email_ids[0]):
+        logging.error("No emails found for the specified dates")
+        sys.exit(1)
+    
     email_ids_string = str(email_ids).replace(" ", ",")
     email_ids_string = email_ids_string.replace("['", "")
     email_ids_string = email_ids_string.replace("']", "")
     email_ids_list = email_ids[0].split(" ")
+    
+    logging.debug(str(email_ids_list))
     
     msgs = mail.fetch(email_ids_string, '(BODY.PEEK[HEADER.FIELDS (SUBJECT)])')
     mail.close()
@@ -111,6 +117,6 @@ def fetch_subjects():
         new_thread.start()
         
 
-logging.basicConfig(level=logging.INFO, format='(%(threadName)-2s) %(message)s',)
+logging.basicConfig(level=logging.DEBUG, format='(%(threadName)-2s) %(message)s',)
 if __name__ == "__main__":
     main()
