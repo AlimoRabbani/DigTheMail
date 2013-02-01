@@ -1,0 +1,19 @@
+
+<MessageLogTraceRecord>
+<Addressing xmlns="http://schemas.microsoft.com/2004/06/ServiceModel/Management/MessageTrace">
+<Action>http://tempuri.org/IService/RequestPass</Action>
+<To>http://81.31.172.140:8081/AppsServices/Service.svc</To>
+</Addressing>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+<s:Header>
+<ActivityId CorrelationId="9b382ff7-00a9-4e1d-8561-7db198397bd2" xmlns="http://schemas.microsoft.com/2004/09/ServiceModel/Diagnostics">2a3b1279-8fe2-44cc-b3d3-bc8b3f3dedb4</ActivityId>
+</s:Header>
+<s:Body>
+<RequestPass xmlns="http://tempuri.org/">
+<hash>123</hash>
+<imei>123</imei>
+<cellPhone>123</cellPhone>
+</RequestPass>
+</s:Body>
+</s:Envelope>
+</MessageLogTraceRecord>
