@@ -92,7 +92,7 @@ def main():
         start_date = datetime.datetime.strptime(options.start_date, '%d-%m-%Y')
         end_date = datetime.datetime.strptime(options.end_date, '%d-%m-%Y')
     except Exception as e:
-        logging.error(str(e))
+        logging.error("Bad date arguments!")
         sys.exit(1)
         
     if(imap_username and imap_password and subject_pattern and folder_pattern and folder_name and start_date and end_date):
