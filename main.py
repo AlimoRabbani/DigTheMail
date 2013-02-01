@@ -28,14 +28,18 @@ def mail_downloader(s, pool, email_id):
         logging.info("Downloaded email with ID: %s" % email_id)
         try:
             whole_mail = email.message_from_string(response_data[0][1])
+            hedaer_parser = email.Parser.HeaderParser()
+            value = hedaer_parser.parsestr(response_data[0][1])
+            email_subject = email.Header.decode_header(value['Subject'])[0][0]
             for part in whole_mail.walk():
                 if part.is_multipart():
                     continue            
                 file_name = part.get_filename()
                 if file_name:
                     logging.info("Found attachment %s in email with ID: %s" % (file_name, email_id))
-                    file_path = os.path.join("%s%s" % (constants.ATTACHMENT_DOWNLOAD_DIRECTORY, email_id), file_name)
-                    FileOperations.create_directory("%s%s" % (constants.ATTACHMENT_DOWNLOAD_DIRECTORY, email_id))
+                    folder_path = os.path.join(constants.ATTACHMENT_DOWNLOAD_DIRECTORY, folder_name, email_subject)
+                    file_path = os.path.join(folder_path, file_name)
+                    FileOperations.create_directory(folder_path)
                     if not os.path.isfile(file_path):
                         temp = part.get_payload(decode=True)
                         
@@ -70,8 +74,12 @@ def main():
     parser.add_option("-E", "--end-date", dest="end_date", help="Finish date to look for emails", metavar="DATE")
     parser.add_option("-P", "--use-ssl", action="store_true", dest="use_ssl", default=False, help="Force SSL Connection")
     
+    global imap_server_address, imap_username, imap_password, folder_name, use_ssl, current_time_str
+    
+    current_time_str = datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S')
+    logging.info("Job started on %s" % (current_time_str))
+    
     (options, args) = parser.parse_args()
-    global imap_server_address, imap_username, imap_password, folder_name, use_ssl
     imap_server_address = options.server_address
     imap_username = options.username
     imap_password = options.password
@@ -170,6 +178,6 @@ def fetch_subjects(start_date, end_date, regex_pattern):
         new_thread.start()
         
 
-logging.basicConfig(level=logging.DEBUG, format='(%(threadName)-2s) %(message)s',)
+logging.basicConfig(level=logging.INFO, format='(%(threadName)-2s) %(message)s',)
 if __name__ == "__main__":
     main()

@@ -11,11 +11,11 @@ class ActivePool(object):
     def makeActive(self, name):
         with self.lock:
             self.active.append(name)
-            logging.debug('Running: %s', self.active)
+#            logging.debug('Running: %s', self.active)
     def makeInactive(self, name):
         with self.lock:
             self.active.remove(name)
-            logging.debug('Running: %s', self.active)
+#            logging.debug('Running: %s', self.active)
 
 class FileOperations(object):
     @staticmethod
