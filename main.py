@@ -11,30 +11,31 @@ def mail_downloader(s, pool, email_id):
     with s:
         name = threading.currentThread().getName()
         pool.makeActive(name)
-        logging.info("Downloading email with ID: " + email_id)
+        logging.info("Downloading email with ID: %s" % email_id)
         mail = imaplib.IMAP4_SSL(imap_server_address)
         mail.login(imap_username, imap_password)
         mail.list()
         mail.select("inbox") # connect to inbox.
         response, response_data = mail.fetch(email_id, '(RFC822)')
-        logging.info("Downloaded email with ID: " + email_id)
+        logging.info("Downloaded email with ID: %s" % email_id)
         whole_mail = email.message_from_string(response_data[0][1])
         for part in whole_mail.walk():
             if part.is_multipart():
                 continue            
             file_name = part.get_filename()
             if file_name:
-                logging.info("Found attachment " + file_name + " in email with ID: " + email_id)
-                file_path = os.path.join(constants.ATTACHMENT_DOWNLOAD_DIRECTORY + email_id, file_name)
-                FileOperations.create_directory(constants.ATTACHMENT_DOWNLOAD_DIRECTORY + email_id)
-                if not os.path.isfile(file_path) :
-                    new_file = open(file_path, 'wb')
+                logging.info("Found attachment %s in email with ID: %s" % (file_name, email_id))
+                file_path = os.path.join("%s%s" % (constants.ATTACHMENT_DOWNLOAD_DIRECTORY, email_id), file_name)
+                FileOperations.create_directory("%s%s" % (constants.ATTACHMENT_DOWNLOAD_DIRECTORY, email_id))
+                if not os.path.isfile(file_path):
                     temp = part.get_payload(decode=True)
-                    new_file.write(temp)
-                    new_file.close()
-                    logging.info("Saved attachment " + file_name + " as " + file_path)
+                    
+                    with open(file_path, 'wb') as new_file:
+                        new_file.write(temp)
+
+                    logging.info("Saved attachment %s as %s" % (file_name, file_path))
                 else:
-                    logging.info("Attachment " + file_name + " already exists at " + file_path)
+                    logging.info("Attachment %s already exists at %s" % (file_name, file_path))
                 cmd = "chmod -R 755 ."
                 os.system(cmd)
                 
