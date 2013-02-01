@@ -31,21 +31,21 @@ def mail_downloader(s, pool, email_id):
             hedaer_parser = email.Parser.HeaderParser()
             value = hedaer_parser.parsestr(response_data[0][1])
             email_subject = email.Header.decode_header(value['Subject'])[0][0]
+            inner_folder_name = re.sub(subject_pattern, folder_pattern, email_subject)
+            logging.debug("Folder name to save cotents of this email is: %s" % (inner_folder_name))
             for part in whole_mail.walk():
                 if part.is_multipart():
                     continue            
                 file_name = part.get_filename()
                 if file_name:
                     logging.info("Found attachment %s in email with ID: %s" % (file_name, email_id))
-                    folder_path = os.path.join(constants.ATTACHMENT_DOWNLOAD_DIRECTORY, folder_name, email_subject)
+                    folder_path = os.path.join(constants.ATTACHMENT_DOWNLOAD_DIRECTORY, folder_name, current_time_str, inner_folder_name)
                     file_path = os.path.join(folder_path, file_name)
                     FileOperations.create_directory(folder_path)
                     if not os.path.isfile(file_path):
                         temp = part.get_payload(decode=True)
-                        
                         with open(file_path, 'wb') as new_file:
                             new_file.write(temp)
-    
                         logging.info("Saved attachment %s as %s" % (file_name, file_path))
                     else:
                         logging.info("Attachment %s already exists at %s" % (file_name, file_path))
@@ -68,13 +68,14 @@ def main():
     parser.add_option("-s", "--server-address", dest="server_address", help="IMAP Server Address", metavar="SERVER", default="imap.gmail.com")
     parser.add_option("-u", "--user-name", dest="username", help="IMAP Username", metavar="UNAME")
     parser.add_option("-p", "--password", dest="password", help="IMAP Server Address", metavar="PASS")
-    parser.add_option("-R", "--regex-pattern", dest="regex_pattern", help="RegEx pattern to look for in email subjects", metavar="REGEX")
+    parser.add_option("-R", "--subject-pattern", dest="subject_pattern", help="RegEx pattern to look for in email subjects", metavar="REGEX")
+    parser.add_option("-X", "--folder-pattern", dest="folder_pattern", help="RegEx pattern to match folders with subjects", metavar="REGEX")
     parser.add_option("-F", "--folder-name", dest="folder_name", help="Folder name for the current user", metavar="FOLDER")
     parser.add_option("-S", "--start-date", dest="start_date", help="Start date to look for emails", metavar="DATE")
     parser.add_option("-E", "--end-date", dest="end_date", help="Finish date to look for emails", metavar="DATE")
     parser.add_option("-P", "--use-ssl", action="store_true", dest="use_ssl", default=False, help="Force SSL Connection")
     
-    global imap_server_address, imap_username, imap_password, folder_name, use_ssl, current_time_str
+    global imap_server_address, imap_username, imap_password, folder_name, use_ssl, current_time_str, subject_pattern, folder_pattern
     
     current_time_str = datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S')
     logging.info("Job started on %s" % (current_time_str))
@@ -83,7 +84,8 @@ def main():
     imap_server_address = options.server_address
     imap_username = options.username
     imap_password = options.password
-    regex_pattern = options.regex_pattern
+    subject_pattern = options.subject_pattern
+    folder_pattern = options.folder_pattern
     folder_name = options.folder_name
     use_ssl = options.use_ssl
     try:
@@ -93,8 +95,8 @@ def main():
         logging.error(str(e))
         sys.exit(1)
         
-    if(imap_username and imap_password and regex_pattern and folder_name and start_date and end_date):
-        fetch_subjects(start_date, end_date, regex_pattern)
+    if(imap_username and imap_password and subject_pattern and folder_pattern and folder_name and start_date and end_date):
+        fetch_subjects(start_date, end_date)
     else:
         logging.error("Bad input arguments!")
         sys.exit(1)
@@ -102,7 +104,7 @@ def main():
     
     
     
-def fetch_subjects(start_date, end_date, regex_pattern):
+def fetch_subjects(start_date, end_date):
     try:
         mail = imaplib.IMAP4_SSL(imap_server_address) if use_ssl else imaplib.IMAP4(imap_server_address)    
         mail.login(imap_username, imap_password)
@@ -155,8 +157,12 @@ def fetch_subjects(start_date, end_date, regex_pattern):
     if(len(email_id_subject_dict.keys())==0):
         logging.error("There was a problem processing email subjects. Contact developer!")
         sys.exit(1)        
+    try:
+        regex_compiled = re.compile(subject_pattern)
+    except Exception:
+        logging.error("Your regex is not a regex!!! Try with another regex!")
+        sys.exit(1)
     
-    regex_compiled = re.compile(regex_pattern)
     selected_email_ids_list = list()
     logging.info("Fetched " + str(len(email_id_subject_dict.keys())) + " subjects matching specified dates")     
     for email_id in email_id_subject_dict.keys():
