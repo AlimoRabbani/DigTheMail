@@ -1,10 +1,9 @@
 import imaplib, email
 import re, os, time, datetime, sys
-import threading, logging
+import threading, logging, argparse
 import constants
 from utilities import ActivePool
 from utilities import FileOperations
-from optparse import OptionParser
 from cgitb import enable
 
 def mail_downloader(s, pool, email_id):
@@ -64,33 +63,33 @@ def mail_downloader(s, pool, email_id):
         pool.makeInactive(name)
 
 def main():
-    parser = OptionParser()
-    parser.add_option("-s", "--server-address", dest="server_address", help="IMAP Server Address", metavar="SERVER", default="imap.gmail.com")
-    parser.add_option("-u", "--username", dest="username", help="IMAP Username", metavar="UNAME")
-    parser.add_option("-p", "--password", dest="password", help="IMAP Server Address", metavar="PASS")
-    parser.add_option("-R", "--subject-pattern", dest="subject_pattern", help="RegEx pattern to look for in email subjects", metavar="REGEX")
-    parser.add_option("-X", "--folder-pattern", dest="folder_pattern", help="RegEx pattern to match folders with subjects", metavar="REGEX")
-    parser.add_option("-F", "--folder-name", dest="folder_name", help="Folder name for the current user", metavar="FOLDER")
-    parser.add_option("-S", "--start-date", dest="start_date", help="Start date to look for emails", metavar="DATE")
-    parser.add_option("-E", "--end-date", dest="end_date", help="Finish date to look for emails", metavar="DATE")
-    parser.add_option("-P", "--use-ssl", action="store_true", dest="use_ssl", default=False, help="Force SSL Connection")
+    parser = argparse.ArgumentParser(conflict_handler='resolve', version='1.0', description='Dig The Mail!')
+    parser.add_argument("--server-address", "-s", action="store", dest="server_address", help="IMAP Server Address", metavar="host_address", default="imap.gmail.com")
+    parser.add_argument("--username", "-u", action="store", dest="username", help="IMAP Username", metavar="username")
+    parser.add_argument("--password", "-p", action="store", dest="password", help="IMAP Server Address", metavar="password")
+    parser.add_argument("--subject-pattern", "-R", action="store", dest="subject_pattern", help="RegEx pattern to look for in email subjects", metavar="subject_pattern")
+    parser.add_argument("--folder-pattern", "-X", action="store", dest="folder_pattern", help="RegEx pattern to match folders with subjects", metavar="folder_pattern")
+    parser.add_argument("--folder-name", "-F", action="store", dest="folder_name", help="Folder name for the current user", metavar="main_folder")
+    parser.add_argument("--start-date", "-S", action="store", dest="start_date", help="Start date to look for emails", metavar="start_date")
+    parser.add_argument("--end-date", "-E", action="store", dest="end_date", help="Finish date to look for emails", metavar="end_date")
+    parser.add_argument("--use-ssl", "-P", action="store_true", dest="use_ssl", default=False, help="Force SSL Connection")
     
     global imap_server_address, imap_username, imap_password, folder_name, use_ssl, current_time_str, subject_pattern, folder_pattern
     
     current_time_str = datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d_%H%M%S')
     logging.info("Job started on %s" % (current_time_str))
     
-    (options, args) = parser.parse_args()
-    imap_server_address = options.server_address
-    imap_username = options.username
-    imap_password = options.password
-    subject_pattern = options.subject_pattern
-    folder_pattern = options.folder_pattern
-    folder_name = options.folder_name
-    use_ssl = options.use_ssl
+    args = parser.parse_args()
+    imap_server_address = args.server_address
+    imap_username = args.username
+    imap_password = args.password
+    subject_pattern = args.subject_pattern
+    folder_pattern = args.folder_pattern
+    folder_name = args.folder_name
+    use_ssl = args.use_ssl
     try:
-        start_date = datetime.datetime.strptime(options.start_date, '%d-%m-%Y')
-        end_date = datetime.datetime.strptime(options.end_date, '%d-%m-%Y')
+        start_date = datetime.datetime.strptime(args.start_date, '%d-%m-%Y')
+        end_date = datetime.datetime.strptime(args.end_date, '%d-%m-%Y')
     except Exception as e:
         logging.error("Bad date arguments!")
         sys.exit(1)
