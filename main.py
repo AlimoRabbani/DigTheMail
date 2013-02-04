@@ -48,8 +48,6 @@ def mail_downloader(s, pool, email_id):
                         logging.info("Saved attachment %s as %s" % (file_name, file_path))
                     else:
                         logging.info("Attachment %s already exists at %s" % (file_name, file_path))
-                    cmd = "chmod -R 755 ."
-                    os.system(cmd)
         except Exception:
             logging.error("There was a problem processing an email attachment. Contact developer!")
             sys.exit(1)
