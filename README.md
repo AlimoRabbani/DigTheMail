@@ -25,7 +25,7 @@ DigTheMail helps teaching assistants download and orginize these assignments aut
 For information on how to use this software, continue reading.
 
 
-Prerequistes:
+Prerequisites:
 --------------------------------------
 * Python v2.7 or later.
 * Any operating system.
