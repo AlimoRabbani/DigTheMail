@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License along with iTu
 
 About:
 --------------------------------------
-DigTheMail started based on observing TAs behavior at the Department of Computer Engineering, Sharif University of Technology. At the department instructors, TAs, and students can use online courseware systems. But non of them are reliable, easy-to-use systems. Therefore, many teaching assistants prefer to have students deliver their electronic assignments by email. They usually create a unique email address for the course and instruct students to attach their files to an email with a specific subject (e.g. CE44088-HW2-881184213). However, downloading and organizing those attachments is performed on an email-by-email basis and is not very easy.
-git
+We started DigTheMail based on an observation of TAs behavior at the Department of Computer Engineering, Sharif University of Technology. At the department, instructors, TAs, and students can use online courseware systems. But non of them are reliable, easy-to-use systems. Therefore, many teaching assistants prefer to have students deliver their electronic assignments by email. They usually create a unique email address for the course and instruct students to attach their files to an email with a specific subject (e.g. CE44088-HW2-881184213). However, downloading and organizing those attachments is performed on an email-by-email basis and is not very easy.
+
 DigTheMail helps teaching assistants download and orginize these assignments automatically. It uses IMAP technology to connect to a mail server that supports IMAP (e.g. gmail) and download the emails you want. This part is done using regular expressions.
 
 **Engineering & Development:** Alimohammad Rabbani, Sadjad Fouladi
 
-For information on how to use this software, continue reading. 
+For information on how to use this software, continue reading.
 
 
 Prerequistes:
