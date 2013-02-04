@@ -20,7 +20,7 @@ DigTheMail started based on observing TAs behavior at the Department of Computer
 git
 DigTheMail helps teaching assistants download and orginize these assignments automatically. It uses IMAP technology to connect to a mail server that supports IMAP (e.g. gmail) and download the emails you want. This part is done using regular expressions.
 
-**Engineering & Development:** Alimohammad Rabbani
+**Engineering & Development:** Alimohammad Rabbani, Sadjad Fouladi
 
 For information on how to use this software, continue reading. 
 
